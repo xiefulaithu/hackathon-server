@@ -11,6 +11,7 @@ type DiseaseDetailController struct {
 }
 
 // Get deals http get request
+// @router / [get]
 func (c DiseaseDetailController) Get() {
 	diseaseName := c.GetString("name")
 	if diseaseName != "" {

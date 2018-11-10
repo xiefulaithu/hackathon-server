@@ -1,14 +1,24 @@
 package models
 
 import (
-	"fmt"
+	"errors"
 
+	"github.com/facebookgo/errgroup"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
 
-func init() {
-	fmt.Println("init models")
+var (
+	db *gorm.DB
+)
+
+func InitDB(connect string) error {
+	d, err := gorm.Open("mysql", connect)
+	if err != nil {
+		return err
+	}
+	db = d
+	return nil
 }
 
 type DiseaseDetail struct {
@@ -25,19 +35,6 @@ type DiseaseTemplatePics struct {
 	Title string `json:"title" gorm:"title"`
 }
 
-var (
-	db *gorm.DB
-)
-
-func InitDB(connect string) error {
-	d, err := gorm.Open("mysql", connect)
-	if err != nil {
-		return err
-	}
-	db = d
-	return nil
-}
-
 func LoadDiseaseDetailByName(name string) DiseaseDetail {
 	ret := DiseaseDetail{}
 	table := db.Table("diseasedetail")
@@ -48,4 +45,33 @@ func LoadDiseaseDetailByName(name string) DiseaseDetail {
 
 	ret.Pics = pics
 	return ret
+}
+
+// Question defines the Question type in hackathon backend server
+type Question struct {
+	Content    string `json:"content" gorm:"column:content"`
+	Pics       string `json:"pics" gorm:"column:pics"`
+	Location   string `json:"location" gorm:"column:location"`
+	CreateTime string `json:"create_time" gorm:"column:create_time"`
+	Questioner string `json:"questioner" gorm:"column:questioner"`
+	Deleted    int    `json:"deleted" gorm:"column:deleted"`
+}
+
+// QueryLatest13Question query latest quetsion and limited to 13 records
+func QueryLatest13Question() []Question {
+	ret := make([]Question, 0)
+	table := db.Table("question")
+	table.Limit(13).Order("id desc").Where("deleted = 1").Find(&ret)
+	return ret
+}
+
+// RecordQuestion insert question to mysql
+func RecordQuestion(q Question) error {
+	table := db.Table("question")
+	if !table.NewRecord(&q) {
+		return errors.New("invalid pri key")
+	}
+
+	localdb := table.Create(&q)
+	return errgroup.NewMultiError(localdb.GetErrors()...)
 }

@@ -1,5 +1,5 @@
-hash: 618af8bbcfc4792ecfa250b9cc06ab5cae7d00bf2b656e99283c11ea6121517a
-updated: 2018-11-08T18:31:51.833912+08:00
+hash: 65cd58087d43f055fbf3c67ac43a536ed75a2177721aa07b7a9a7f63be52a07a
+updated: 2018-11-09T23:01:23.08414+08:00
 imports:
 - name: github.com/astaxie/beego
   version: 053a075344c118a5cc41981b29ef612bb53d20ca
@@ -12,6 +12,8 @@ imports:
   - session
   - toolbox
   - utils
+- name: github.com/facebookgo/errgroup
+  version: 779c8d7ef069c522bc72ee5f31a98d89a37f3fb6
 - name: github.com/go-sql-driver/mysql
   version: d523deb1b23d913de5bdada721a6071e71283618
 - name: github.com/jinzhu/gorm
@@ -23,6 +25,10 @@ imports:
   subpackages:
   - acme
   - acme/autocert
+- name: google.golang.org/appengine
+  version: 4a4468ece617fc8205e99368fa2200e9d1fad421
+  subpackages:
+  - cloudsql
 - name: gopkg.in/yaml.v2
   version: 5420a8b6744d3b0345ab293f6fcba19c978f1183
 testImports:

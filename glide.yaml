@@ -6,6 +6,7 @@ import:
   version: ^1.9.1
 - package: github.com/go-sql-driver/mysql
   version: ^1.4.0
+- package: github.com/facebookgo/errgroup
 testImport:
 - package: github.com/smartystreets/goconvey
   version: ^1.6.3
