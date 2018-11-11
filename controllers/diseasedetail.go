@@ -10,9 +10,9 @@ type DiseaseDetailController struct {
 	beego.Controller
 }
 
-// Get deals http get request
+// Query deals http get request
 // @router / [get]
-func (c DiseaseDetailController) Get() {
+func (c *DiseaseDetailController) Query() {
 	diseaseName := c.GetString("name")
 	if diseaseName != "" {
 		c.Data["json"] = models.LoadDiseaseDetailByName(diseaseName)

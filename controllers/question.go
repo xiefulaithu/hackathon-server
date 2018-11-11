@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/xiefulaithu/hackathon-server/models"
 )
@@ -17,11 +19,10 @@ type QuestionController struct {
 // @Contact xiefulai@sogou-inc.com xiefulaithu@163.com
 // @License Apache2.0
 // @LicenseUrl http://www.apache.org/licenses/LICENSE-2.0.html
-// @Param
 // @Success 200
 // @Failure 400
 // @router / [get]
-func (c QuestionController) LimitedQuery() {
+func (c *QuestionController) LimitedQuery() {
 	questions := models.QueryLatest13Question()
 	c.Data["json"] = questions
 	c.ServeJSON()
@@ -32,7 +33,6 @@ type ReqQuestion struct {
 	Content    string `form:"content"`
 	Pics       string `form:"pics"`
 	Location   string `form:"location"`
-	CreateTime string `form:"create_time"`
 	Questioner string `form:"questioner"`
 }
 
@@ -41,16 +41,21 @@ func convert2DBQuestion(q ReqQuestion) models.Question {
 		Content:    q.Content,
 		Pics:       q.Pics,
 		Location:   q.Location,
-		CreateTime: q.CreateTime,
+		CreateTime: time.Now(),
 		Questioner: q.Questioner,
 	}
 }
 
 // CreateQuestion function create record in "question" table
 // @router / [post]
-func (c QuestionController) CreateQuestion() {
+func (c *QuestionController) CreateQuestion() {
 	q := ReqQuestion{}
 	if err := c.ParseForm(&q); err != nil {
+		c.Data["json"] = BasicResp{
+			StatusCode: 400,
+			Message:    "parse form data Err: " + err.Error(),
+		}
+	} else {
 		rq := convert2DBQuestion(q)
 		if err := models.RecordQuestion(rq); err != nil {
 			c.Data["json"] = BasicResp{
@@ -61,11 +66,6 @@ func (c QuestionController) CreateQuestion() {
 			c.Data["json"] = BasicResp{
 				StatusCode: 0,
 			}
-		}
-	} else {
-		c.Data["json"] = BasicResp{
-			StatusCode: 400,
-			Message:    "parse form data Err: " + err.Error(),
 		}
 	}
 	c.ServeJSON()

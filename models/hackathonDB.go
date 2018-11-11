@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"time"
 
 	"github.com/facebookgo/errgroup"
 	_ "github.com/go-sql-driver/mysql"
@@ -47,21 +48,22 @@ func LoadDiseaseDetailByName(name string) DiseaseDetail {
 	return ret
 }
 
-// Question defines the Question type in hackathon backend server
+// Question defines the Question Message struct in hackathon backend server
 type Question struct {
-	Content    string `json:"content" gorm:"column:content"`
-	Pics       string `json:"pics" gorm:"column:pics"`
-	Location   string `json:"location" gorm:"column:location"`
-	CreateTime string `json:"create_time" gorm:"column:create_time"`
-	Questioner string `json:"questioner" gorm:"column:questioner"`
-	Deleted    int    `json:"deleted" gorm:"column:deleted"`
+	ID         int       `json:"id" gorm:"column:id"`
+	Content    string    `json:"content" gorm:"column:content"`
+	Pics       string    `json:"pics" gorm:"column:pics"`
+	Location   string    `json:"location" gorm:"column:location"`
+	CreateTime time.Time `json:"create_time" gorm:"column:create_time"`
+	Questioner string    `json:"questioner" gorm:"column:questioner"`
+	Deleted    int       `json:"deleted" gorm:"column:deleted"`
 }
 
 // QueryLatest13Question query latest quetsion and limited to 13 records
 func QueryLatest13Question() []Question {
 	ret := make([]Question, 0)
 	table := db.Table("question")
-	table.Limit(13).Order("id desc").Where("deleted = 1").Find(&ret)
+	table.Limit(13).Order("id desc").Where("deleted = 0").Find(&ret)
 	return ret
 }
 
@@ -69,9 +71,35 @@ func QueryLatest13Question() []Question {
 func RecordQuestion(q Question) error {
 	table := db.Table("question")
 	if !table.NewRecord(&q) {
-		return errors.New("invalid pri key")
+		return errors.New("invalid pri key in question table")
 	}
 
+	localdb := table.Create(&q)
+	return errgroup.NewMultiError(localdb.GetErrors()...)
+}
+
+// Reply defines the Reply Message struct in hackathon backend server
+type Reply struct {
+	QuestionID int       `json:"qid" gorm:"column:question_id"`
+	Content    string    `json:"content" gorm:"column:content"`
+	CreateTime time.Time `json:"create_time" gorm:"column:create_time"`
+	Responder  string    `json:"responder" gorm:"column:responder"`
+}
+
+// QueryAllReplyByQuestionID query all replys by question_id
+func QueryAllReplyByQuestionID(qid int) []Reply {
+	ret := make([]Reply, 0)
+	table := db.Table("reply")
+	table.Order("create_time desc").Where("question_id = ?", qid).Find(&ret)
+	return ret
+}
+
+// RecordReply insert reply to mysql
+func RecordReply(q Reply) error {
+	table := db.Table("reply")
+	if !table.NewRecord(&q) {
+		return errors.New("invalid pri key in reply table")
+	}
 	localdb := table.Create(&q)
 	return errgroup.NewMultiError(localdb.GetErrors()...)
 }
