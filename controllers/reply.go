@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/xiefulaithu/hackathon-server/models"
 )
@@ -32,6 +34,7 @@ func convert2DBReply(r ReqReply) models.Reply {
 		QuestionID: r.QuestionID,
 		Content:    r.Content,
 		Responder:  r.Responder,
+		CreateTime: time.Now(),
 	}
 }
 
