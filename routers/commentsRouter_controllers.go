@@ -15,6 +15,22 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
+	beego.GlobalControllerRouter["github.com/xiefulaithu/hackathon-server/controllers:HotMapController"] = append(beego.GlobalControllerRouter["github.com/xiefulaithu/hackathon-server/controllers:HotMapController"],
+		beego.ControllerComments{
+			Method: "QueryByName",
+			Router: `/`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/xiefulaithu/hackathon-server/controllers:HotMapController"] = append(beego.GlobalControllerRouter["github.com/xiefulaithu/hackathon-server/controllers:HotMapController"],
+		beego.ControllerComments{
+			Method: "SaveHotPointByName",
+			Router: `/`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams: param.Make(),
+			Params: nil})
+
 	beego.GlobalControllerRouter["github.com/xiefulaithu/hackathon-server/controllers:ObjectController"] = append(beego.GlobalControllerRouter["github.com/xiefulaithu/hackathon-server/controllers:ObjectController"],
 		beego.ControllerComments{
 			Method: "Post",

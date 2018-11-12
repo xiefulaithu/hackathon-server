@@ -35,6 +35,11 @@ func init() {
 				&controllers.ReplyController{},
 			),
 		),
+		beego.NSNamespace("/hotmap",
+			beego.NSInclude(
+				&controllers.HotMapController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

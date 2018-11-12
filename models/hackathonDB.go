@@ -103,3 +103,29 @@ func RecordReply(q Reply) error {
 	localdb := table.Create(&q)
 	return errgroup.NewMultiError(localdb.GetErrors()...)
 }
+
+// HotPoint defines the HotPoint struct in hackathon backend server
+type HotPoint struct {
+	Name   string `json:"name" gorm:"column:rec_result"`
+	Lat    string `json:"lat" gorm:"column:lat"`
+	Lng    string `json:"lng" gorm:"column:lng"`
+	PicURL string `json:"pic_url" gorm:"column:pic_url"`
+}
+
+// QueryAllHotPointByRecResult query all hotpoint by disease name
+func QueryAllHotPointByRecResult(recResult string) []HotPoint {
+	ret := make([]HotPoint, 0)
+	table := db.Table("hotmap")
+	table.Where("rec_result = ?", recResult).Find(&ret)
+	return ret
+}
+
+// RecordHotPoint insert hotpoint to table "hotmap"
+func RecordHotPoint(hp HotPoint) error {
+	table := db.Table("hotmap")
+	if !table.NewRecord(&hp) {
+		return errors.New("invalid pri key in reply table")
+	}
+	localdb := table.Create(&hp)
+	return errgroup.NewMultiError(localdb.GetErrors()...)
+}
