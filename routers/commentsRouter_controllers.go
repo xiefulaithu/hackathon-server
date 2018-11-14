@@ -103,4 +103,12 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
+	beego.GlobalControllerRouter["github.com/xiefulaithu/hackathon-server/controllers:ReplyNumController"] = append(beego.GlobalControllerRouter["github.com/xiefulaithu/hackathon-server/controllers:ReplyNumController"],
+		beego.ControllerComments{
+			Method: "QueryReplyNum",
+			Router: `/`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams: param.Make(),
+			Params: nil})
+
 }

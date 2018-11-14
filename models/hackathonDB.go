@@ -57,6 +57,7 @@ type Question struct {
 	CreateTime time.Time `json:"create_time" gorm:"column:create_time"`
 	Questioner string    `json:"questioner" gorm:"column:questioner"`
 	Deleted    int       `json:"deleted" gorm:"column:deleted"`
+	ReplyNum   int       `json:"reply_num" gorm:"-"`
 }
 
 // QueryLatest13Question query latest quetsion and limited to 13 records
@@ -64,6 +65,10 @@ func QueryLatest13Question() []Question {
 	ret := make([]Question, 0)
 	table := db.Table("question")
 	table.Limit(13).Order("id desc").Where("deleted = 0").Find(&ret)
+
+	for k := 0; k < len(ret); k++ {
+		ret[k].ReplyNum = GetReplyNumByQuestionID(ret[k].ID)
+	}
 	return ret
 }
 
@@ -92,6 +97,15 @@ func QueryAllReplyByQuestionID(qid int) []Reply {
 	table := db.Table("reply")
 	table.Order("create_time desc").Where("question_id = ?", qid).Find(&ret)
 	return ret
+}
+
+// GetReplyNumByQuestionID get how many replys for a question
+func GetReplyNumByQuestionID(qid int) int {
+	replys := make([]Reply, 0)
+	count := 0
+	table := db.Table("reply")
+	table.Where("question_id = ?", qid).Find(&replys).Count(&count)
+	return count
 }
 
 // RecordReply insert reply to mysql

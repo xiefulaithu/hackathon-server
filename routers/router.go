@@ -40,6 +40,11 @@ func init() {
 				&controllers.HotMapController{},
 			),
 		),
+		beego.NSNamespace("/replynum",
+			beego.NSInclude(
+				&controllers.ReplyNumController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
